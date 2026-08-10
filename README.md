@@ -1,85 +1,167 @@
-# Vulnerability Analysis of ViT vs CNN in Autonomous Perception
+# Vulnerability Analysis of Vision Transformers vs. CNNs Under Frequency-Aware Physical Adversarial Constraints in Autonomous Perception
 
-This codebase implements the core technical foundation (Weeks 1-2) for a comparative research framework evaluating the robustness of a Multi-Head Self-Attention (MHSA) Vision Transformer against a Convolutional Neural Network (YOLOv10-S) under frequency-constrained physical adversarial patches.
-
----
-
-# Technical Architecture & Directory Structure
-
-```
-vit-vs-cnn-robustness/
-├── data/
-│   ├── nuscenes/         # Standard nuScenes-mini split images and metadata
-│   ├── gtsrb/            # German Traffic Sign Recognition Benchmark dataset
-│   └── carla/            # CARLA physical domain scene renders (W6-7)
-├── notebooks/            # High-performance fine-tuning on Google Colab A100
-│   ├── colab_yolov10_finetuning.ipynb
-│   └── colab_vitdet_finetuning.ipynb
-├── src/
-│   ├── data_prep/        # Week 1: Data ingestion and coordinate projections
-│   │   ├── nuscenes_loader.py
-│   │   └── gtsrb_loader.py
-│   ├── models/           # Week 2: Unified detection wrappers & visualization hooks
-│   │   ├── yolov10_wrapper.py
-│   │   └── detr_vit_wrapper.py
-│   ├── training/         # Week 2: Mixed-precision parameterizable fine-tuning loops
-│   │   ├── train_yolov10.py
-│   │   └── train_detr_vit.py
-│   └── utils/
-│       ├── metrics.py    # Standard evaluation metrics (mAP, RSF, Adversarial Delta)
-│       └── setup_env.py  # Automated dependency checks and folder creation
-├── requirements.txt      # Dependency lists
-└── README.md             # Running and verification instructions
-```
+**MSc in Artificial Intelligence (Practicum) — National College of Ireland (NCI)**  
+**Author**: Kunal Arya  
+**Student ID**: 24243833  
 
 ---
 
-# Features & Implementation Details
+## 📌 Executive Summary
 
-# 1. Robust Coordinates Projection (`nuscenes_loader.py`)
-- Real 3D-to-2D projection: Project 3D LiDAR/radar boxes to the front camera coordinate frame using intrinsic matrix multiplication and ego pose transformation.
-- **Premium CARLA Road Generator**: If no physical dataset is found, it automatically switches to a CARLA rendering mode. It draws high-fidelity urban layouts with grass, perspective roads, dividing stripes, time-of-day skies, and drawn vehicles/pedestrians, along with perfect ground-truth coordinates. This guarantees the entire project is runnable instantly!
+This repository contains the complete, reproducible source code, datasets, evaluation results, figures, report deliverables, and Configuration Manual for the research project evaluating the physical adversarial robustness of **Vision Transformers (ViT)** versus **Convolutional Neural Networks (CNN)** under **2D Discrete Cosine Transform (DCT) frequency constraints**.
 
-# 2. Grad-CAM and Attention Rollout Hooks (`src/models/`)
-- **YOLOv10 Wrapper**: Registers backward hooks on key convolutional layers in the backbone, caching intermediate activations and gradients to support Grad-CAM diagnostic heatmaps.
-- **DETR-ViT Wrapper**: Configures Hugging Face YOLOS with `output_attentions=True`, extracting the Multi-Head Self-Attention maps across all layers. Provides a standard `get_attention_rollout()` method to fuse matrices using mean/max strategies, enabling recursive trace maps of attention-hijacking.
-
-# 3. VRAM-Safe Training Pipelines (`src/training/`)
-- Implements PyTorch Automatic Mixed Precision (AMP) via `torch.cuda.amp.autocast` to execute training in FP16.
-- Integrates gradient accumulation to simulate large training batch sizes while staying strictly under a 5.0 GB local VRAM ceiling.
+### 🌟 Key Findings
+1. **High-Frequency Spectral Resilience**: Under high-frequency perturbations ($r > 16$), YOLOS-Small showed a **44.1% relative mAP decrease**, compared with a **53.9% decrease** for Faster R-CNN v2. This pattern supports H1 within the evaluated models, data, and attack configuration, indicating lower observed high-frequency sensitivity for YOLOS-Small.
+2. **Low-Frequency Structural Vulnerability**: Low-frequency structural patches ($r \le 8$) reduced mAP by **more than 50%** in both detectors ($52.1\%$ drop in Faster R-CNN vs. $50.4\%$ in YOLOS-Small), supporting H2 across architectural boundaries.
+3. **Shallower Degradation Slope (RSF)**: Sweep analysis across patch area ratios ($0.0$ to $0.5$) revealed that YOLOS-Small exhibited an **RSF slope approximately half that of Faster R-CNN** ($0.1192$ versus $0.2321$), indicating greater tolerance to expanding patch coverage.
 
 ---
 
-# Local Verification & Quickstart
+## 📁 Repository Structure
 
-Follow these steps to run smoke tests and verify the environment on your Windows laptop (RTX 4050):
-
-# Step 1: Initialize folders and verify dependencies
-```bash
-python src/utils/setup_env.py
+```
+MainFolder/
+├── src/                          # Modular Python source code
+│   ├── attacks/                  # 2D DCT filter, EoT pipeline, PGD patch optimizer, dual loss
+│   │   ├── adversarial_loss.py   # Dual-objective loss (ReLU-hinge suppression + symmetric KL divergence)
+│   │   ├── dct_filter.py         # Differentiable 2D DCT-II and inverse DCT-III frequency mask
+│   │   ├── eot_pipeline.py       # 6-transform Expectation over Transformation pipeline
+│   │   └── patch_optimizer.py    # PGD patch optimization engine
+│   ├── data_prep/                # Dataset loaders
+│   │   ├── carla_loader.py       # CARLA perception dataset loader (weather & distance filtering)
+│   │   ├── gtsrb_loader.py       # GTSRB traffic sign patch loader
+│   │   └── nuscenes_loader.py    # nuScenes-mini front-camera CAM_FRONT loader
+│   ├── experiments/              # Experiment runners & visualization
+│   │   ├── aggregate_results.py  # Result aggregator across random seeds (N=5)
+│   │   ├── compare_with_references.py # Qualitative prior literature contextualization
+│   │   ├── main_experiment.py   # Core experiment execution pipeline
+│   │   ├── run_carla_experiments.py # CARLA cross-domain runner
+│   │   ├── run_experiments.py   # nuScenes main experiment runner
+│   │   └── visualize_results.py # 300 DPI publication plot generator
+│   ├── models/                   # Model wrappers & factory
+│   │   ├── faster_rcnn_wrapper.py# Faster R-CNN v2 wrapper with Grad-CAM hooks
+│   │   ├── model_factory.py     # Unified model instantiation factory
+│   │   └── yolos_wrapper.py      # YOLOS-Small wrapper with Attention Rollout hooks
+│   ├── training/                 # Patch optimization utilities
+│   └── utils/                    # Metrics, seed utils, and visualization helpers
+├── data/                         # Datasets (nuScenes-mini, CARLA, GTSRB)
+├── results/                      # Evaluation JSONs, LaTeX tables, and 300 DPI figures
+│   ├── carla/                    # CARLA domain evaluation results
+│   ├── evaluation/               # Aggregated metrics & statistical p-values
+│   └── figures/                  # Publication-ready plots (Figures 1 to 8)
+├── config_manual_latex/          # NCI Configuration Manual LaTeX source project
+├── checkpoints/                  # Pre-trained model checkpoints
+├── Research_Report.docx          # Master 21-body-page MSc Research Report
+├── Dissertation_Presentation.pptx# 12-slide Viva Defense presentation deck
+├── Configuration_Manual.docx     # Compiled Configuration Manual Word document
+├── Configuration_Manual_LaTeX.zip# Overleaf-ready Configuration Manual package
+├── requirements.txt              # Environment dependencies list
+└── README.md                     # Repository documentation
 ```
 
-# Step 2: Run Dataset Loader Smoke Tests
-Verify that the datasets load, render CARLA scenes, and format bounding boxes correctly:
+---
+
+## 🛠️ Environment Setup & Installation
+
+### Prerequisites
+* **Operating System**: Windows 11 / Linux (Ubuntu 22.04)
+* **GPU Hardware**: NVIDIA GeForce GPU (minimum 6 GB VRAM budget, CUDA 12.1)
+* **Python**: Python 3.11+ via Anaconda / Miniconda
+
+### Step-by-Step Installation
+
+1. **Clone the Repository**:
+   ```bash
+   git clone https://github.com/theguyshemet-ops/Practicum.git
+   cd Practicum
+   ```
+
+2. **Create and Activate Conda Environment**:
+   ```bash
+   conda create -n vit_vs_yolo python=3.11 -y
+   conda activate vit_vs_yolo
+   ```
+
+3. **Install PyTorch with CUDA 12.1 Support**:
+   ```bash
+   pip install torch==2.1.2 torchvision==0.16.2 --index-url https://download.pytorch.org/whl/cu121
+   ```
+
+4. **Install Required Dependencies**:
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+---
+
+## 📊 Dataset Setup Instructions
+
+### 1. nuScenes-mini Dataset Setup
+1. Register and download the **nuScenes-mini** split (`v1.0-mini.tgz`) from [www.nuscenes.org](https://www.nuscenes.org).
+2. Extract the archive contents into `data/nuscenes/`:
+   ```
+   data/nuscenes/
+   └── v1.0-mini/
+   ```
+
+### 2. CARLA Autonomous Perception Dataset Setup
+1. Place pre-rendered Unreal Engine CARLA frames and bounding box text annotations in `data/carla/`.
+2. The dataset loader automatically parses weather subsets (`clear`, `rain`, `fog`) and vehicle distance bands ($5\text{m}$ to $30\text{m}$).
+
+---
+
+## 🚀 Running Experiments & Generating Results
+
+### 1. Run Main Experiment Suite (nuScenes-mini)
+Execute the frequency-stratified PGD attack optimization across 3 spectral bands (Low, High, Full) and 4 epsilon budgets ($\varepsilon \in \{0.1, 0.2, 0.3, 0.5\}$) over $N=5$ seeds:
 ```bash
-python src/data_prep/nuscenes_loader.py
-python src/data_prep/gtsrb_loader.py
+python -m src.experiments.run_experiments --data_root data/nuscenes --results_dir results/ --num_steps 150 --alpha 0.005
 ```
 
-# Step 3: Run Model Forward-Pass Smoke Tests
-Confirm that both model wrappers initialize, load default/mock configs, register diagnostic hooks, and execute inferences successfully:
+### 2. Run CARLA Cross-Domain Validation Suite
+Execute weather and distance ablation evaluations on the CARLA driving domain:
 ```bash
-python src/models/yolov10_wrapper.py
-python src/models/detr_vit_wrapper.py
+python -m src.experiments.run_carla_experiments --data_root data/carla --results_dir results/carla/
 ```
 
-# Step 4: Run Fine-Tuning Dry Runs
-Test the training loops by executing a 2-epoch dry run locally in CARLA mode to ensure memory safety (under 5 GB VRAM peak):
+### 3. Aggregate Statistical Results
+Aggregate JSON evaluation metrics, compute sample standard deviations ($s$), and generate Welch's $t$-test $p$-values:
 ```bash
-# YOLOv10-S fine-tuning dry run
-python src/training/train_yolov10.py --epochs 2 --batch_size 4 --grad_accum 2 --use_carla
-
-# DETR-ViT (YOLOS) fine-tuning dry run
-python src/training/train_detr_vit.py --epochs 2 --batch_size 2 --grad_accum 4 --use_carla
+python -m src.experiments.aggregate_results --results_dir results/
 ```
---
+
+### 4. Generate 300 DPI Publication Plots
+Generate all 8 high-resolution figures saved to `results/figures/`:
+```bash
+python -m src.experiments.visualize_results --results_dir results/
+```
+
+### 5. Run Literature Contextualization Analysis
+Generate qualitative contextual comparison tables comparing empirical findings against published baselines:
+```bash
+python -m src.experiments.compare_with_references
+```
+
+---
+
+## 🔍 Qualitative Diagnostics: Grad-CAM & Attention Rollout
+
+To extract backbone feature maps and attention heatmaps:
+
+* **Faster R-CNN Grad-CAM**: Registers backward hooks on `backbone.body.layer4` to compute gradient-weighted activation maps.
+* **YOLOS-Small Attention Rollout**: Recursively computes cumulative attention flow across transformer encoder layers:
+  $$\mathbf{A} = \prod_{l=1}^{L} \left(0.5 \, \mathbf{W}^{(l)} + 0.5 \, \mathbf{I}\right)$$
+
+---
+
+## 📄 Deliverables Summary
+
+* **MSc Research Report**: [`Research_Report.docx`](file:///E:/Python/VIT_vs_YOLO/Implementation/MainFolder/Research_Report.docx) *(21 body pages before References)*
+* **Viva Presentation**: [`Dissertation_Presentation.pptx`](file:///E:/Python/VIT_vs_YOLO/Implementation/MainFolder/Dissertation_Presentation.pptx) *(12-slide deck)*
+* **Configuration Manual**: [`Configuration_Manual.docx`](file:///E:/Python/VIT_vs_YOLO/Implementation/MainFolder/Configuration_Manual.docx) & [`Configuration_Manual_LaTeX.zip`](file:///E:/Python/VIT_vs_YOLO/Implementation/MainFolder/Configuration_Manual_LaTeX.zip)
+
+---
+
+## 📜 License & Citation
+
+This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.

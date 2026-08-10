@@ -49,12 +49,7 @@ MainFolder/
 │   ├── carla/                    # CARLA domain evaluation results
 │   ├── evaluation/               # Aggregated metrics & statistical p-values
 │   └── figures/                  # Publication-ready plots (Figures 1 to 8)
-├── config_manual_latex/          # NCI Configuration Manual LaTeX source project
 ├── checkpoints/                  # Pre-trained model checkpoints
-├── Research_Report.docx          # Master 21-body-page MSc Research Report
-├── Dissertation_Presentation.pptx# 12-slide Viva Defense presentation deck
-├── Configuration_Manual.docx     # Compiled Configuration Manual Word document
-├── Configuration_Manual_LaTeX.zip# Overleaf-ready Configuration Manual package
 ├── requirements.txt              # Environment dependencies list
 └── README.md                     # Repository documentation
 ```

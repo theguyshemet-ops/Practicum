@@ -154,14 +154,6 @@ To extract backbone feature maps and attention heatmaps:
 
 ---
 
-## 📄 Deliverables Summary
-
-* **MSc Research Report**: [`Research_Report.docx`](file:///E:/Python/VIT_vs_YOLO/Implementation/MainFolder/Research_Report.docx) *(21 body pages before References)*
-* **Viva Presentation**: [`Dissertation_Presentation.pptx`](file:///E:/Python/VIT_vs_YOLO/Implementation/MainFolder/Dissertation_Presentation.pptx) *(12-slide deck)*
-* **Configuration Manual**: [`Configuration_Manual.docx`](file:///E:/Python/VIT_vs_YOLO/Implementation/MainFolder/Configuration_Manual.docx) & [`Configuration_Manual_LaTeX.zip`](file:///E:/Python/VIT_vs_YOLO/Implementation/MainFolder/Configuration_Manual_LaTeX.zip)
-
----
-
 ## 📜 License & Citation
 
-This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License

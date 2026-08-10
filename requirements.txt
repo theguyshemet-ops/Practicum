@@ -1,0 +1,23 @@
+# Core deep learning framework
+torch>=2.0.0
+torchvision>=0.15.0
+transformers>=4.40.0
+timm>=0.9.0
+
+# CNN object detection baseline (YOLOv10 and utility models)
+ultralytics>=8.2.0
+
+# Data preprocessing, transformation, and physical EoT modeling
+numpy>=1.23.0
+pandas>=1.5.0
+opencv-python>=4.7.0
+albumentations>=1.4.0
+
+# nuScenes specific toolkit and 3D projections
+nuscenes-devkit>=1.1.10
+pyquaternion>=0.9.9
+
+# Metrics and diagnostics
+scikit-learn>=1.2.0
+matplotlib>=3.7.0
+scipy>=1.10.0

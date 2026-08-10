@@ -13,7 +13,7 @@ This repository contains the complete, reproducible source code, datasets, evalu
 ### 🌟 Key Findings
 1. **High-Frequency Spectral Resilience**: Under high-frequency perturbations ($r > 16$), YOLOS-Small showed a **44.1% relative mAP decrease**, compared with a **53.9% decrease** for Faster R-CNN v2. This pattern supports H1 within the evaluated models, data, and attack configuration, indicating lower observed high-frequency sensitivity for YOLOS-Small.
 2. **Low-Frequency Structural Vulnerability**: Low-frequency structural patches ($r \le 8$) reduced mAP by **more than 50%** in both detectors ($52.1\%$ drop in Faster R-CNN vs. $50.4\%$ in YOLOS-Small), supporting H2 across architectural boundaries.
-3. **Shallower Degradation Slope (RSF)**: Sweep analysis across patch area ratios ($0.0$ to $0.5$) revealed that YOLOS-Small exhibited an **RSF slope approximately half that of Faster R-CNN** ($0.1192$ versus $0.2321$), indicating greater tolerance to expanding patch coverage.
+3. **Robust Sensitivty Factor (RSF)**: Sweep analysis across patch area ratios ($0.0$ to $0.5$) revealed that YOLOS-Small exhibited an **RSF slope approximately half that of Faster R-CNN** ($0.1192$ versus $0.2321$), indicating greater tolerance to expanding patch coverage.
 
 ---
 

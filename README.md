@@ -89,19 +89,26 @@ MainFolder/
 
 ---
 
-## 📊 Dataset Setup Instructions
+## 📊 Dataset Setup Instructions & Portal Links
 
-### 1. nuScenes-mini Dataset Setup
-1. Register and download the **nuScenes-mini** split (`v1.0-mini.tgz`) from [www.nuscenes.org](https://www.nuscenes.org).
-2. Extract the archive contents into `data/nuscenes/`:
+### 1. nuScenes Dataset
+* **Official Portal Link**: [nuScenes Dataset Portal](https://www.nuscenes.org)
+* **Setup**: Register and download the **nuScenes-mini** split (`v1.0-mini.tgz`) from [www.nuscenes.org](https://www.nuscenes.org).
+* Extract the archive contents into `data/nuscenes/`:
    ```
    data/nuscenes/
    └── v1.0-mini/
    ```
 
-### 2. CARLA Autonomous Perception Dataset Setup
-1. Place pre-rendered Unreal Engine CARLA frames and bounding box text annotations in `data/carla/`.
-2. The dataset loader automatically parses weather subsets (`clear`, `rain`, `fog`) and vehicle distance bands ($5\text{m}$ to $30\text{m}$).
+### 2. CARLA Autonomous Perception Dataset
+* **Official Portal Link**: [CARLA Autonomous Driving Simulator](https://carla.org)
+* **Setup**: Place pre-rendered Unreal Engine CARLA frames and bounding box text annotations in `data/carla/`.
+* The dataset loader automatically parses weather subsets (`clear`, `rain`, `fog`) and vehicle distance bands ($5\text{m}$ to $30\text{m}$).
+
+### 3. GTSRB (German Traffic Sign Recognition Benchmark) Dataset
+* **Official Portal Link**: [GTSRB Benchmark Portal](https://benchmark.ini.rub.de/gtsrb_dataset.html)
+* **Repository Mirror**: [GTSRB Kaggle Dataset Mirror](https://www.kaggle.com/datasets/meowmeowmeowmeowmeow/gtsrb-german-traffic-sign)
+* **Setup**: Place traffic sign textures in `data/gtsrb/` for patch initialization (`stop_sign.png`).
 
 ---
 
